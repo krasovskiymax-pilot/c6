@@ -12,27 +12,67 @@
         }
 
         body {
+            --page-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --calculator-bg: #ffffff;
+            --calculator-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            --display-bg: #1a1a1a;
+            --display-color: #ffffff;
+            --button-bg: #f0f0f0;
+            --button-color: #333;
+            --button-hover: #e0e0e0;
+            --button-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--page-bg);
             padding: 20px;
         }
 
+        body.theme-dark {
+            --page-bg: linear-gradient(135deg, #0f172a 0%, #1f2937 100%);
+            --calculator-bg: #0b1220;
+            --calculator-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            --display-bg: #0a0f1a;
+            --display-color: #e5e7eb;
+            --button-bg: #1f2937;
+            --button-color: #e5e7eb;
+            --button-hover: #111827;
+            --button-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
         .calculator {
-            background: #ffffff;
+            background: var(--calculator-bg);
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--calculator-shadow);
             padding: 30px;
             max-width: 400px;
             width: 100%;
         }
 
+        .toolbar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            color: var(--button-color);
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            border-radius: 999px;
+        }
+
+        body.theme-dark .theme-toggle {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
         .display {
-            background: #1a1a1a;
-            color: #ffffff;
+            background: var(--display-bg);
+            color: var(--display-color);
             font-size: 2.5rem;
             padding: 20px;
             text-align: right;
@@ -53,7 +93,7 @@
         }
 
         button {
-            background: #f0f0f0;
+            background: var(--button-bg);
             border: none;
             border-radius: 10px;
             font-size: 1.5rem;
@@ -61,13 +101,13 @@
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 600;
-            color: #333;
+            color: var(--button-color);
         }
 
         button:hover {
-            background: #e0e0e0;
+            background: var(--button-hover);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--button-shadow);
         }
 
         button:active {
@@ -109,6 +149,9 @@
 </head>
 <body>
     <div class="calculator">
+        <div class="toolbar">
+            <button class="theme-toggle" id="themeToggle" type="button">Тёмная тема</button>
+        </div>
         <div class="display" id="display">0</div>
         <div class="buttons">
             <button class="clear" onclick="clearDisplay()">C</button>
@@ -138,8 +181,24 @@
 
     <script>
         let display = document.getElementById('display');
+        const themeToggle = document.getElementById('themeToggle');
         let currentInput = '0';
         let shouldResetDisplay = false;
+
+        function setTheme(theme) {
+            document.body.classList.toggle('theme-dark', theme === 'dark');
+            const buttonText = theme === 'dark' ? 'Светлая тема' : 'Тёмная тема';
+            themeToggle.textContent = buttonText;
+            localStorage.setItem('theme', theme);
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme);
+
+        themeToggle.addEventListener('click', function() {
+            const nextTheme = document.body.classList.contains('theme-dark') ? 'light' : 'dark';
+            setTheme(nextTheme);
+        });
 
         function updateDisplay() {
             display.textContent = currentInput;
